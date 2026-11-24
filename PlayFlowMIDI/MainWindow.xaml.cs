@@ -2520,7 +2520,7 @@ namespace PlayFlowMIDI
             SortPlaylist();
         }
 
-        private List<TrackChunk> GetEffectiveTrackChunks(MidiFile midiFile)
+        internal static List<TrackChunk> GetEffectiveTrackChunks(MidiFile midiFile)
         {
             var trackChunks = midiFile.GetTrackChunks().ToList();
 
@@ -3354,7 +3354,7 @@ namespace PlayFlowMIDI
             }
         }
 
-        private int DetectMajorKey(IEnumerable<Note> notes)
+        internal static int DetectMajorKey(IEnumerable<Note> notes)
         {
             int[] pitchCount = new int[12];
             foreach (var n in notes)
