@@ -109,6 +109,60 @@ namespace PlayFlowMIDI.Tests
         }
 
         [Fact]
+        public void SaveAsPlaylistIsOnlyOfferedWithANameValidatorAndAResult()
+        {
+            RunOnStaThread(() =>
+            {
+                var plain = new AutoPlaylistWindow(Library(), new AutoPlaylistCriteria(), "37 keys");
+                Assert.Equal(System.Windows.Visibility.Collapsed, Find<Button>(plain, "SaveAsPlaylistButton").Visibility);
+                plain.Close();
+
+                var window = new AutoPlaylistWindow(Library(), new AutoPlaylistCriteria(), "37 keys", _ => null);
+                var save = Find<Button>(window, "SaveAsPlaylistButton");
+                Assert.Equal(System.Windows.Visibility.Visible, save.Visibility);
+                Assert.True(save.IsEnabled);
+                Assert.Null(window.SaveAsPlaylistName);
+
+                Find<TextBox>(window, "MinFitBox").Text = "99";
+                Assert.False(save.IsEnabled);
+                window.Close();
+            });
+        }
+
+        [Fact]
+        public void NamePromptOnlyAcceptsValidNames()
+        {
+            RunOnStaThread(() =>
+            {
+                var prompt = new TextPromptWindow("Rename Playlist", "Playlist name", "Default",
+                    value => value.Length == 0 ? "empty" : value == "Taken" ? "duplicate" : null);
+                var box = Assert.IsType<TextBox>(prompt.FindName("ValueBox"));
+                var ok = Assert.IsType<Button>(prompt.FindName("OkButton"));
+                var error = Assert.IsType<TextBlock>(prompt.FindName("ErrorText"));
+
+                Assert.Equal("Default", box.Text);
+                Assert.True(ok.IsEnabled);
+
+                box.Text = "Taken";
+                Assert.False(ok.IsEnabled);
+                Assert.Equal("duplicate", error.Text);
+
+                box.Text = "";
+                Assert.False(ok.IsEnabled);
+                Assert.Equal(string.Empty, error.Text);
+
+                box.Text = "  Easy 30  ";
+                Assert.True(ok.IsEnabled);
+                Assert.Equal(string.Empty, error.Text);
+                prompt.Close();
+
+                var empty = new TextPromptWindow("New Playlist", "Playlist name", string.Empty, value => value.Length == 0 ? "empty" : null);
+                Assert.False(Assert.IsType<Button>(empty.FindName("OkButton")).IsEnabled);
+                empty.Close();
+            });
+        }
+
+        [Fact]
         public void RandomOrderOnlyReshufflesOnRequest()
         {
             RunOnStaThread(() =>

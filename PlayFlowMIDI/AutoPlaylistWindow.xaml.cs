@@ -20,12 +20,24 @@ namespace PlayFlowMIDI
         /// <summary>The songs shown in the preview when Apply was pressed, in playing order.</summary>
         public List<MidiSong> Result { get; private set; } = new();
 
-        public AutoPlaylistWindow(IEnumerable<MidiSong> songs, AutoPlaylistCriteria criteria, string keyModeLabel)
+        /// <summary>Set when the user chose "Save as Playlist" instead of Apply: the name for the new playlist.</summary>
+        public string? SaveAsPlaylistName { get; private set; }
+
+        private readonly Func<string, string?>? _validatePlaylistName;
+
+        /// <param name="validatePlaylistName">
+        /// Returns null when a playlist name can be used, otherwise the message to show.
+        /// Without it the window only offers Apply.
+        /// </param>
+        public AutoPlaylistWindow(IEnumerable<MidiSong> songs, AutoPlaylistCriteria criteria, string keyModeLabel,
+            Func<string, string?>? validatePlaylistName = null)
         {
             InitializeComponent();
 
             _songs = songs.ToList();
             Criteria = criteria;
+            _validatePlaylistName = validatePlaylistName;
+            if (validatePlaylistName != null) SaveAsPlaylistButton.Visibility = Visibility.Visible;
 
             TargetMinutesBox.Text = FormatNumber(criteria.TargetMinutes);
             MinFitBox.Text = FormatNumber(criteria.MinFitPercent);
@@ -117,6 +129,21 @@ namespace PlayFlowMIDI
             DialogResult = true;
         }
 
+        private void SaveAsPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            if (Result.Count == 0 || _validatePlaylistName == null) return;
+
+            var prompt = new TextPromptWindow("Save as Playlist", "Playlist name", string.Empty, _validatePlaylistName)
+            {
+                Owner = this,
+                Topmost = Topmost,
+            };
+            if (prompt.ShowDialog() != true) return;
+
+            SaveAsPlaylistName = prompt.Value;
+            DialogResult = true;
+        }
+
         private void UpdatePreview()
         {
             bool valid = TryReadNumber(TargetMinutesBox, out double minutes);
@@ -132,6 +159,7 @@ namespace PlayFlowMIDI
                 ShowEmpty("Check the highlighted values: only positive numbers are accepted.");
                 SummaryText.Text = string.Empty;
                 ApplyButton.IsEnabled = false;
+                SaveAsPlaylistButton.IsEnabled = false;
                 return;
             }
 
@@ -172,6 +200,7 @@ namespace PlayFlowMIDI
             }
 
             ApplyButton.IsEnabled = Result.Count > 0;
+            SaveAsPlaylistButton.IsEnabled = Result.Count > 0;
         }
 
         private void ShowEmpty(string message)

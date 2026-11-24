@@ -28,7 +28,8 @@ namespace PlayFlowMIDI
                 : mode == KeyModeRanges.Mode15 && autoAdapt ? "15 keys, auto-adapt"
                 : $"{mode} keys";
 
-            var window = new AutoPlaylistWindow(_masterPlaylist, _config.Main.AutoPlaylist, modeLabel)
+            var window = new AutoPlaylistWindow(_masterPlaylist, _config.Main.AutoPlaylist, modeLabel,
+                name => ConfigMigrations.ValidatePlaylistName(_config, name))
             {
                 Owner = this,
                 Topmost = Topmost,
@@ -36,6 +37,13 @@ namespace PlayFlowMIDI
             if (window.ShowDialog() != true) return;
 
             _config.Main.AutoPlaylist = window.Criteria;
+
+            if (window.SaveAsPlaylistName != null)
+            {
+                AddPlaylistFromSongs(window.SaveAsPlaylistName, window.Result);
+                return;
+            }
+
             SetAutoPlaylist(window.Result);
             SortPlaylist();
             SaveConfig();
