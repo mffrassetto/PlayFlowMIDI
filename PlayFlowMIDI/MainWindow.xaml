@@ -111,6 +111,8 @@
                                         <ComboBoxItem Content="Custom Order"/>
                                         <ComboBoxItem Content="Recently Added"/>
                                         <ComboBoxItem Content="Duration"/>
+                                        <ComboBoxItem Content="Difficulty"/>
+                                        <ComboBoxItem Content="Fit %"/>
                                     </ComboBox>
                                 </StackPanel>
 
@@ -136,6 +138,8 @@
                                 <GridViewColumn Header="BPM" Width="60" DisplayMemberBinding="{Binding BPM}"/>
                                 <GridViewColumn Header="Time Added" Width="210" DisplayMemberBinding="{Binding TimeAdded}"/>
                                 <GridViewColumn Header="Duration" Width="80" DisplayMemberBinding="{Binding Duration}"/>
+                                <GridViewColumn Header="Dif." Width="55" DisplayMemberBinding="{Binding DifficultyText}"/>
+                                <GridViewColumn Header="Fit %" Width="60" DisplayMemberBinding="{Binding FitText}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
