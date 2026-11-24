@@ -1562,17 +1562,9 @@ namespace PlayFlowMIDI
         {
             string octaveHandling = _config.Settings.OctaveHandling;
 
-            int minNote = 48;
-            int maxNote = 83;
-
             string profileName = _config.LastSelectedProfile;
             var profile = _config.Profiles.FirstOrDefault(p => p.Name == profileName);
-            if (profile != null)
-            {
-                if (profile.SelectedMode == "37") { minNote = 48; maxNote = 84; }
-                else if (profile.SelectedMode == "36") { minNote = 48; maxNote = 83; }
-                else if (profile.SelectedMode == "15") { minNote = 60; maxNote = 84; }
-            }
+            var (minNote, maxNote) = KeyModeRanges.GetRange(profile?.SelectedMode);
 
             if (octaveHandling == "Wrap")
             {
@@ -1609,17 +1601,9 @@ namespace PlayFlowMIDI
                 return;
             }
 
-            int minNote = 48;
-            int maxNote = 83;
-
             string profileName = _config.LastSelectedProfile;
             var profile = _config.Profiles.FirstOrDefault(p => p.Name == profileName);
-            if (profile != null)
-            {
-                if (profile.SelectedMode == "37") { minNote = 48; maxNote = 84; }
-                else if (profile.SelectedMode == "36") { minNote = 48; maxNote = 83; }
-                else if (profile.SelectedMode == "15") { minNote = 60; maxNote = 84; }
-            }
+            var (minNote, maxNote) = KeyModeRanges.GetRange(profile?.SelectedMode);
 
             if (noteNumber < minNote || noteNumber > maxNote) return;
 
@@ -1769,9 +1753,9 @@ namespace PlayFlowMIDI
 
             if (profile.SelectedMode == "36")
             {
-                int minNote = 48;
+                var (minNote, maxNote) = KeyModeRanges.GetRange(profile.SelectedMode);
+                if (noteNumber < minNote || noteNumber > maxNote) return null;
                 int index = noteNumber - minNote;
-                if (index < 0 || index >= 36) return null;
 
                 string gridName;
                 int gridIndex;
@@ -1787,9 +1771,9 @@ namespace PlayFlowMIDI
             }
             else if (profile.SelectedMode == "37")
             {
-                int minNote = 48;
+                var (minNote, maxNote) = KeyModeRanges.GetRange(profile.SelectedMode);
+                if (noteNumber < minNote || noteNumber > maxNote) return null;
                 int index = noteNumber - minNote;
-                if (index < 0 || index >= 37) return null;
 
                 string gridName;
                 int gridIndex;
@@ -1805,8 +1789,7 @@ namespace PlayFlowMIDI
             }
             else if (profile.SelectedMode == "15")
             {
-                int[] majorNotes = { 60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84 };
-                int index = Array.IndexOf(majorNotes, noteNumber);
+                int index = Array.IndexOf(KeyModeRanges.Mode15Notes, noteNumber);
                 if (index == -1) return null;
 
                 string gridName;
