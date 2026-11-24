@@ -58,6 +58,7 @@ namespace PlayFlowMIDI
         public bool Shuffle { get; set; } = false;
         public string LastPlayedSongPath { get; set; } = string.Empty;
         public List<MidiSongConfig> Playlist { get; set; } = new();
+        public AutoPlaylistCriteria AutoPlaylist { get; set; } = new();
     }
 
     public class MidiSongConfig
