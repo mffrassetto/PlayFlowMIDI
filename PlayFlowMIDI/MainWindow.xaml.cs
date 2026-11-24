@@ -23,7 +23,7 @@ using Forms = System.Windows.Forms;
 
 namespace PlayFlowMIDI
 {
-    public class MidiSong
+    public partial class MidiSong
     {
         public string Title { get; set; } = string.Empty;
         public string FilePath { get; set; } = string.Empty;
@@ -2103,7 +2103,8 @@ namespace PlayFlowMIDI
                     Duration = songConfig.Duration,
                     CustomOrder = songConfig.CustomOrder,
                     DisabledTrackIndices = songConfig.DisabledTrackIndices ?? new(),
-                    TrackStatesManuallySet = songConfig.TrackStatesManuallySet
+                    TrackStatesManuallySet = songConfig.TrackStatesManuallySet,
+                    Analysis = songConfig.Analysis ?? new()
                 };
                 _masterPlaylist.Add(song);
             }
@@ -2274,11 +2275,13 @@ namespace PlayFlowMIDI
                     Duration = song.Duration,
                     CustomOrder = song.CustomOrder,
                     DisabledTrackIndices = new List<int>(song.DisabledTrackIndices),
-                    TrackStatesManuallySet = song.TrackStatesManuallySet
+                    TrackStatesManuallySet = song.TrackStatesManuallySet,
+                    Analysis = song.Analysis
                 });
             }
 
             _config.Save();
+            RefreshFitColumn();
             RegisterAllHotKeys();
 
             if (!_isLoading) SwitchToGameWindow();
@@ -2497,6 +2500,12 @@ namespace PlayFlowMIDI
                         break;
                     case "Duration":
                         sortedSongs = ascending ? filteredSongs.OrderBy(s => ParseDuration(s.Duration)) : filteredSongs.OrderByDescending(s => ParseDuration(s.Duration));
+                        break;
+                    case SortByDifficulty:
+                        sortedSongs = ascending ? filteredSongs.OrderBy(s => s.NotesPerSecond) : filteredSongs.OrderByDescending(s => s.NotesPerSecond);
+                        break;
+                    case SortByFit:
+                        sortedSongs = ascending ? filteredSongs.OrderBy(s => s.FitPercent) : filteredSongs.OrderByDescending(s => s.FitPercent);
                         break;
                     default:
                         return;
@@ -2883,6 +2892,7 @@ namespace PlayFlowMIDI
 
         private void ReloadSongs(bool reset = false)
         {
+            QueueSongAnalysis();
             string folderPath = FolderPathTextBox.Text;
             if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
             {
@@ -2942,21 +2952,7 @@ namespace PlayFlowMIDI
                 TimeAdded = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
-            try
-            {
-                var midiFile = MidiFile.Read(filePath);
-                var tempoMap = midiFile.GetTempoMap();
-                var bpm = tempoMap.GetTempoAtTime((MidiTimeSpan)0).BeatsPerMinute;
-                song.BPM = Math.Round(bpm).ToString();
-                var duration = midiFile.GetDuration<MetricTimeSpan>();
-                song.Duration = $"{(int)duration.Minutes}:{duration.Seconds:D2}";
-            }
-            catch
-            {
-                song.BPM = "N/A";
-                song.Duration = "0:00";
-            }
-
+            // BPM and duration are filled in by the background analysis (see MainWindow.Analysis.cs).
             return song;
         }
 
@@ -2978,6 +2974,7 @@ namespace PlayFlowMIDI
                 UpdateCustomOrderIndices();
                 SortPlaylist();
                 SaveConfig();
+                QueueSongAnalysis();
             }
         }
 

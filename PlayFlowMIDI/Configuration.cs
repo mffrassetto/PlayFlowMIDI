@@ -70,6 +70,7 @@ namespace PlayFlowMIDI
         public int CustomOrder { get; set; } = 0;
         public List<int> DisabledTrackIndices { get; set; } = new();
         public bool TrackStatesManuallySet { get; set; } = false;
+        public MidiAnalysisData Analysis { get; set; } = new();
     }
 
     public class SettingsConfig
