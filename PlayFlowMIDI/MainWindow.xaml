@@ -83,6 +83,17 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
+                        <!-- PLAYLIST ROW -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                            <StackPanel Margin="0,0,8,0">
+                                <TextBlock Text="Playlist" Foreground="#CCCCCC" FontSize="12"/>
+                                <ComboBox x:Name="PlaylistComboBox" Width="260" Height="26" ToolTip="Choose which playlist is shown and played" SelectionChanged="PlaylistComboBox_SelectionChanged"/>
+                            </StackPanel>
+                            <Button Content="New" Width="60" Height="26" Margin="0,0,8,0" VerticalAlignment="Bottom" ToolTip="Create an empty playlist" Click="NewPlaylist_Click"/>
+                            <Button Content="Rename" Width="70" Height="26" Margin="0,0,8,0" VerticalAlignment="Bottom" ToolTip="Rename the selected playlist" Click="RenamePlaylist_Click"/>
+                            <Button Content="Delete" Width="60" Height="26" VerticalAlignment="Bottom" ToolTip="Delete the selected playlist (the MIDI files are kept)" Click="DeletePlaylist_Click"/>
+                        </StackPanel>
+
                         <!-- MAIN TOOLBAR ROW -->
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>

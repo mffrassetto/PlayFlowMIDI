@@ -2091,23 +2091,7 @@ namespace PlayFlowMIDI
             UpdateSpeedUI();
             UpdatePitchUI();
 
-            _masterPlaylist.Clear();
-            foreach (var songConfig in _config.Main.Playlist)
-            {
-                var song = new MidiSong
-                {
-                    Title = songConfig.Title,
-                    FilePath = songConfig.FilePath,
-                    BPM = songConfig.BPM,
-                    TimeAdded = songConfig.TimeAdded,
-                    Duration = songConfig.Duration,
-                    CustomOrder = songConfig.CustomOrder,
-                    DisabledTrackIndices = songConfig.DisabledTrackIndices ?? new(),
-                    TrackStatesManuallySet = songConfig.TrackStatesManuallySet,
-                    Analysis = songConfig.Analysis ?? new()
-                };
-                _masterPlaylist.Add(song);
-            }
+            InitializePlaylists();
 
             ProfileList.Items.Clear();
             foreach (var p in _config.Profiles)
@@ -2263,22 +2247,7 @@ namespace PlayFlowMIDI
                 }
             }
 
-            _config.Main.Playlist.Clear();
-            foreach (MidiSong song in _masterPlaylist)
-            {
-                _config.Main.Playlist.Add(new MidiSongConfig
-                {
-                    Title = song.Title,
-                    FilePath = song.FilePath,
-                    BPM = song.BPM,
-                    TimeAdded = song.TimeAdded,
-                    Duration = song.Duration,
-                    CustomOrder = song.CustomOrder,
-                    DisabledTrackIndices = new List<int>(song.DisabledTrackIndices),
-                    TrackStatesManuallySet = song.TrackStatesManuallySet,
-                    Analysis = song.Analysis
-                });
-            }
+            StoreActivePlaylist();
 
             _config.Save();
             RefreshFitColumn();
@@ -2896,7 +2865,8 @@ namespace PlayFlowMIDI
             string folderPath = FolderPathTextBox.Text;
             if (string.IsNullOrWhiteSpace(folderPath) || !Directory.Exists(folderPath))
             {
-                PlaylistListView.Items.Clear();
+                // Playlists without a folder (songs added by hand or saved from Auto Playlist) still show their songs.
+                SortPlaylist();
                 return;
             }
 

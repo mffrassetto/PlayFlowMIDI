@@ -57,8 +57,23 @@ namespace PlayFlowMIDI
         public string PlaybackMode { get; set; } = "PlayOnce"; // PlayOnce, RepeatSong, RepeatPlaylist
         public bool Shuffle { get; set; } = false;
         public string LastPlayedSongPath { get; set; } = string.Empty;
-        public List<MidiSongConfig> Playlist { get; set; } = new();
+        /// <summary>
+        /// Single playlist written by ConfigVersion 1 and older. Only read, so it can be moved
+        /// into <see cref="Playlists"/> (see ConfigMigrations); it is null afterwards and no longer written.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+        public List<MidiSongConfig>? Playlist { get; set; }
+        public List<PlaylistConfig> Playlists { get; set; } = new();
+        public string SelectedPlaylist { get; set; } = string.Empty;
         public AutoPlaylistCriteria AutoPlaylist { get; set; } = new();
+    }
+
+    public class PlaylistConfig
+    {
+        public string Name { get; set; } = string.Empty;
+        /// <summary>Folder that Reload scans for this playlist. Empty for playlists that are not tied to a folder.</summary>
+        public string FolderPath { get; set; } = string.Empty;
+        public List<MidiSongConfig> Songs { get; set; } = new();
     }
 
     public class MidiSongConfig

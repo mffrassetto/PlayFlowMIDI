@@ -5,7 +5,7 @@ namespace PlayFlowMIDI.Tests
     public class ConfigCompatibilityTests
     {
         // Shape written by PlayFlowMIDI 1.2.2.0: playlist entries have no "Analysis".
-        private const string OldConfigJson = """
+        internal const string OldConfigJson = """
         {
           "ConfigVersion": 1,
           "Main": {
@@ -39,7 +39,7 @@ namespace PlayFlowMIDI.Tests
         {
             var config = JsonSerializer.Deserialize<AppConfig>(OldConfigJson)!;
 
-            var song = Assert.Single(config.Main.Playlist);
+            var song = Assert.Single(config.Main.Playlist!);
             Assert.Equal("a", song.Title);
             Assert.Equal("120", song.BPM);
             Assert.Equal("3:05", song.Duration);
@@ -57,7 +57,7 @@ namespace PlayFlowMIDI.Tests
         public void AnalysisSurvivesASaveAndLoad()
         {
             var config = JsonSerializer.Deserialize<AppConfig>(OldConfigJson)!;
-            config.Main.Playlist[0].Analysis = new MidiAnalysisData
+            config.Main.Playlist![0].Analysis = new MidiAnalysisData
             {
                 Version = MidiAnalyzer.CurrentVersion,
                 FileSize = 1234,
@@ -75,7 +75,7 @@ namespace PlayFlowMIDI.Tests
             };
 
             string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-            var loaded = JsonSerializer.Deserialize<AppConfig>(json)!.Main.Playlist[0].Analysis;
+            var loaded = JsonSerializer.Deserialize<AppConfig>(json)!.Main.Playlist![0].Analysis;
 
             Assert.DoesNotContain("IsCurrent", json);
             Assert.DoesNotContain("HasResult", json);
