@@ -2512,7 +2512,7 @@ namespace PlayFlowMIDI
                 }
             }
 
-            var sortedList = sortedSongs.ToList();
+            var sortedList = ApplyAutoPlaylistView(sortedSongs.ToList());
 
             PlaylistListView.Items.Clear();
             foreach (var song in sortedList)

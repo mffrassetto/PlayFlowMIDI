@@ -70,6 +70,7 @@
                             <TextBox x:Name="FolderPathTextBox" Grid.Column="0" Height="26" VerticalContentAlignment="Center" Margin="0,0,8,0" TextChanged="SaveTrigger"/>
                             <Button Grid.Column="1" Content="Load Folder" Height="26" Margin="0,0,8,0" Padding="10,0" Click="LoadFolder_Click"/>
                             <Button Grid.Column="2" Content="Reload" Width="70" Height="26" Margin="0,0,200,0" ToolTip="Reload folders" Click="ReloadSongs_Click"/>
+                            <Button x:Name="AutoPlaylistButton" Grid.Column="2" Content="Auto Playlist" Width="110" Height="26" Margin="78,0,0,0" HorizontalAlignment="Left" ToolTip="Build a playlist from the analyzed songs by duration, difficulty and fit" Click="AutoPlaylist_Click"/>
                             <Button Grid.Column="3" Content="+" Width="32" Height="26" Margin="0,0,8,0" ToolTip="Add MIDI files" Click="AddSongs_Click"/>
                             <Button Grid.Column="4" Content="-" Width="32" Height="26" ToolTip="Remove selected MIDI files" Click="RemoveSongs_Click"/>
                         </Grid>

@@ -1,0 +1,108 @@
+<Window x:Class="PlayFlowMIDI.AutoPlaylistWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Auto Playlist" Height="600" Width="820" MinHeight="460" MinWidth="700"
+        Background="#121212" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+
+    <Window.Resources>
+        <Style x:Key="FieldLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+        </Style>
+        <Style TargetType="ListViewItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="12">
+
+        <!-- CRITERIA -->
+        <Border DockPanel.Dock="Top" Background="#1B1B1B" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+            <StackPanel>
+                <WrapPanel>
+                    <StackPanel Margin="0,0,14,8">
+                        <TextBlock Text="Total duration (min)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TargetMinutesBox" Width="110" Height="26" VerticalContentAlignment="Center" ToolTip="The playlist never goes over this length. Leave empty for no limit." TextChanged="Criteria_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,6,8">
+                        <TextBlock Text="Difficulty" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="DifficultyPresetBox" Width="150" Height="26" ToolTip="Easy and Medium are relative to your own songs: the easiest third and the easiest two thirds." SelectionChanged="DifficultyPreset_SelectionChanged">
+                            <ComboBoxItem Content="Any" Tag="Any"/>
+                            <ComboBoxItem Content="Easy" Tag="Easy"/>
+                            <ComboBoxItem Content="Medium" Tag="Medium"/>
+                            <ComboBoxItem Content="Custom" Tag="Custom"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,14,8">
+                        <TextBlock Text="Max notes/s" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="MaxDifficultyBox" Width="80" Height="26" VerticalContentAlignment="Center" ToolTip="Highest value of the Dif. column allowed. Leave empty for any." TextChanged="MaxDifficulty_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,14,8">
+                        <TextBlock Text="Min Fit %" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="MinFitBox" Width="80" Height="26" VerticalContentAlignment="Center" ToolTip="Lowest value of the Fit % column allowed. Leave empty for any." TextChanged="Criteria_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,14,8">
+                        <TextBlock Text="Max tracks" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="MaxTracksBox" Width="80" Height="26" VerticalContentAlignment="Center" ToolTip="Highest number of tracks allowed. Leave empty for any." TextChanged="Criteria_TextChanged"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="0,0,8,8">
+                        <TextBlock Text="Order" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="OrderBox" Width="150" Height="26" SelectionChanged="Order_SelectionChanged">
+                            <ComboBoxItem Content="Easiest first"/>
+                            <ComboBoxItem Content="Random"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <Button x:Name="ShuffleAgainButton" Content="Shuffle again" Height="26" Padding="10,0" Margin="0,16,0,8" VerticalAlignment="Top" Visibility="Collapsed" Click="ShuffleAgain_Click"/>
+                </WrapPanel>
+
+                <TextBlock x:Name="ModeText" Foreground="#888888" FontSize="12" TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
+
+        <!-- BUTTONS -->
+        <Grid DockPanel.Dock="Bottom" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="SummaryText" Grid.Column="0" Foreground="#BBBBBB" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,12,0"/>
+            <Button x:Name="ApplyButton" Grid.Column="1" Content="Apply" Width="90" Height="28" Margin="0,0,8,0" IsDefault="True" Click="Apply_Click"/>
+            <Button Grid.Column="2" Content="Cancel" Width="90" Height="28" IsCancel="True"/>
+        </Grid>
+
+        <!-- PREVIEW -->
+        <Border Background="#1B1B1B" CornerRadius="8" Padding="8">
+            <Grid>
+                <ListView x:Name="PreviewListView" Background="#1B1B1B" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.Resources>
+                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                        </Style>
+                    </ListView.Resources>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Title" Width="430" DisplayMemberBinding="{Binding Title}"/>
+                            <GridViewColumn Header="Duration" Width="80" DisplayMemberBinding="{Binding Duration}"/>
+                            <GridViewColumn Header="Dif." Width="60" DisplayMemberBinding="{Binding DifficultyText}"/>
+                            <GridViewColumn Header="Fit %" Width="60" DisplayMemberBinding="{Binding FitText}"/>
+                            <GridViewColumn Header="Tracks" Width="60" DisplayMemberBinding="{Binding Analysis.TrackCount}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <TextBlock x:Name="EmptyText" Foreground="#BBBBBB" FontStyle="Italic" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="40" Visibility="Collapsed"/>
+            </Grid>
+        </Border>
+
+    </DockPanel>
+</Window>

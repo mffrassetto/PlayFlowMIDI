@@ -2,7 +2,7 @@ namespace PlayFlowMIDI.Tests
 {
     public class PlaylistBuilderTests
     {
-        private static MidiSong Song(string title, double minutes, double notesPerSecond, double fit, int tracks = 1)
+        internal static MidiSong Song(string title, double minutes, double notesPerSecond, double fit, int tracks = 1)
         {
             var song = new MidiSong { Title = title };
             song.ApplyAnalysis(new MidiAnalysisResult
